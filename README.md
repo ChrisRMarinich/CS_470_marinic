@@ -4,7 +4,7 @@
 ***Original Author: Dr. Michael J. Reale***  
 ***SUNY Polytechnic Institute*** 
 
-## Python Scripts
+## Runnable Python Scripts
 
 ### BasicVision.py
 A basic sample that loads up the relevant libraries, prints versions numbers, and either 1) loads an image from a path specified on the command line, or 2) opens a webcam.
