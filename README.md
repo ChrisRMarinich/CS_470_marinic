@@ -1,6 +1,6 @@
 # CS 470: Computer Vision and Image Processing
 ***Spring 2026***  
-***Author: Your Name Here***  
+***Author: Christopher Marinich***  
 ***Original Author: Dr. Michael J. Reale***  
 ***SUNY Polytechnic Institute*** 
 
