@@ -42,13 +42,67 @@ def main():
     disk_image = np.where(disk_image > 200, 200, disk_image)
     disk_image = np.where(disk_image < 100, 100, disk_image)
     
-    cv2.imshow("Disk image", disk_image)
+    #cv2.imshow("Disk image", disk_image)
     #cv2.imshow("Shades", shades)
     #cv2.imshow("My Image", image)
     #cv2.imshow("Subimage", subimage)
     #cv2.imshow("Gray", gray)
     #cv2.imshow("Float", float_image)
-    cv2.waitKey(-1)
+    #cv2.waitKey(-1)
+    
+    eyes_orig = cv2.imread("images/eyes.png")
+    sf = 10.0
+    eyes_small = cv2.resize(eyes_orig, dsize=None, 
+                            fx=1/sf, fy=1/sf)
+    eyes_horror = cv2.resize(eyes_small, dsize=None,
+                             fx=sf, fy=sf,
+                             interpolation=cv2.INTER_NEAREST)
+    #cv2.imshow("MY EYES!!!!!!!", eyes_horror)
+    #cv2.waitKey(-1)    
+    
+    capture = cv2.VideoCapture("images/noice.mp4")
+    
+    key = -1
+    sf = 1.0
+    ghost = None
+    MAX_CNT = 15
+        
+    while key == -1:
+        _, image = capture.read()
+        
+        if ghost is not None:
+            fimage = image.astype("float64")
+            fghost = ghost.astype("float64")
+            fimage = 0.5*fimage + 0.5*fghost
+            combo = cv2.convertScaleAbs(fimage) 
+        else:
+            combo = image      
+        
+        frame_index = int(capture.get(cv2.CAP_PROP_POS_FRAMES))
+        frame_cnt = int(capture.get(cv2.CAP_PROP_FRAME_COUNT))
+        print(frame_index, frame_cnt)
+        
+        if frame_index % MAX_CNT == 0:
+            ghost = np.copy(image)
+        
+        if frame_index == frame_cnt:
+            capture.set(cv2.CAP_PROP_POS_FRAMES, 0)   
+          
+        '''    
+        image = cv2.resize(image, dsize=None, 
+                            fx=1/sf, fy=1/sf)
+        image = cv2.resize(image, dsize=None,
+                                fx=sf, fy=sf,
+                                interpolation=cv2.INTER_NEAREST)
+        sf += 0.2 
+        '''                              
+            
+        cv2.imshow("NOICE", combo)
+        
+        key = cv2.waitKey(30)
+        
+        
+    
     
     cv2.destroyAllWindows()
     
