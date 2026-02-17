@@ -15,6 +15,8 @@ from enum import Enum
 class FilterType(Enum):
     BOX = "Box Filter"
     GAUSS = "Gaussian Filter"
+    MEDIAN = "Median Filter"
+    LAPLACE = "Laplacian Filter"
     
 def do_filter(image, filter_size, filter_type):
     if filter_type == FilterType.BOX:
@@ -23,6 +25,14 @@ def do_filter(image, filter_size, filter_type):
         output = cv2.GaussianBlur(image, 
                                   ksize=(filter_size, filter_size), 
                                   sigmaX=0)
+    elif filter_type == FilterType.MEDIAN:
+        output = cv2.medianBlur(image, ksize=filter_size)
+    elif filter_type == FilterType.LAPLACE:
+        laplace = cv2.Laplacian(image, 
+                                ddepth=cv2.CV_64F, 
+                                ksize=filter_size, 
+                                scale=0.25)
+        output = cv2.convertScaleAbs(laplace, alpha=0.5, beta=127.0)
         
     return output
 
