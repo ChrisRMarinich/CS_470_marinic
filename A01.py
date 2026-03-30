@@ -144,7 +144,7 @@ def get_piecewise_linear_transform(points: list[list[float]] | list[tuple[float,
     if points is None or len(points) == 0:
         return np.arange(256, dtype=np.uint8)
 
-    # Normalize to list of tuples
+    
     pts = [(float(p[0]), float(p[1])) for p in points]
     pts.sort(key=lambda t: t[0])
 
@@ -152,7 +152,6 @@ def get_piecewise_linear_transform(points: list[list[float]] | list[tuple[float,
     r_pts = np.array(r_pts, dtype=np.float64)
     s_pts = np.array(s_pts, dtype=np.float64)
 
-    # Interpolate at every integer r in [0,255]
     r = np.arange(256, dtype=np.float64)
     s = np.interp(r, r_pts, s_pts, left=s_pts[0], right=s_pts[-1])
 
@@ -161,9 +160,9 @@ def get_piecewise_linear_transform(points: list[list[float]] | list[tuple[float,
 
 
 
-# ----------------------------
-# Gradio UI (main)
-# ----------------------------
+
+#----------------------------------------------------------|Gradio UI (main)|----------------------------------------------------------
+
 
 def main() -> None:
     def _run(image, mode, gamma, max_r):
@@ -210,7 +209,7 @@ def main() -> None:
             with gr.Column(scale=1):
                 out = gr.Image(label="Output image", type="numpy", image_mode="L")
 
-        # Run on button click and also when controls change (if image is present)
+   
         run_btn.click(_run, inputs=[inp, mode, gamma, max_r], outputs=[out])
         mode.change(_run, inputs=[inp, mode, gamma, max_r], outputs=[out])
         gamma.change(_run, inputs=[inp, mode, gamma, max_r], outputs=[out])
