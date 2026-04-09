@@ -85,7 +85,9 @@ def main():
             element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (se_size,se_size))    
             #output = cv2.erode(output, element, iterations=iterations)
             
-            output = cv2.morphologyEx(output, cv2.MORPH_OPEN, element, iterations=iterations)
+            chosen_op = cv2.MORPH_OPEN
+            #chosen_op = cv2.MORPH_TOPHAT            
+            output = cv2.morphologyEx(output, chosen_op, element, iterations=iterations)
             
             numConnect, labelImage = cv2.connectedComponents(output, None, connectivity=8, ltype=cv2.CV_32S)
             modLabels = labelImage % len(colors)
