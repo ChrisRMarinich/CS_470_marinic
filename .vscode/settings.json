@@ -11,9 +11,9 @@
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        "./assign01",
+        ".",
         "-p",
-        "*test*.py"
+        "test_*.py"
     ],
     "python.testing.pytestEnabled": false,
     "python.testing.unittestEnabled": true
