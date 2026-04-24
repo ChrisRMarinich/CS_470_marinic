@@ -11,14 +11,9 @@ BoundingBox = Tuple[int, int, int, int]
 
 class CellFinder:
     def __init__(self, model_dir):
-        """
-        Constructor for the class.
 
-        Parameters
-        ----------
-        model_dir : str
-            Directory where saved model data could be stored/loaded.
-        """
+        # Constructor for the class.
+
         self.model_dir = model_dir
 
         # Tunable parameters
@@ -38,19 +33,7 @@ class CellFinder:
         pass
 
     def find_WBC(self, image):
-        """
-        Given a single color image, find white blood cells and return bounding boxes.
-
-        Parameters
-        ----------
-        image : np.ndarray
-            Color image in OpenCV BGR format.
-
-        Returns
-        -------
-        List[Tuple[int, int, int, int]]
-            Bounding boxes in (ymin, xmin, ymax, xmax) format.
-        """
+       
         if image is None or image.size == 0:
             return []
 
@@ -58,7 +41,7 @@ class CellFinder:
         if h == 0 or w == 0:
             return []
 
-        # Step 1: Compute superpixels
+        # Compute superpixels
         segments = slic(
             image,
             n_segments=self.num_superpixels,
@@ -74,13 +57,13 @@ class CellFinder:
         if cnt == 0:
             return []
 
-        # Step 2: Compute mean BGR color per superpixel
+        # Compute mean BGR color per superpixel
         group_means = np.zeros((cnt, 3), dtype="float32")
         for specific_group in range(cnt):
             mask_image = np.where(segments == specific_group, 255, 0).astype("uint8")
             group_means[specific_group] = cv2.mean(image, mask=mask_image)[0:3]
 
-        # Step 3: K-means on superpixel means
+        # K-means on superpixel means
         criteria = (
             cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER,
             100,
@@ -96,21 +79,23 @@ class CellFinder:
             cv2.KMEANS_PP_CENTERS,
         )
 
-        # Step 4: Find cluster center closest to blue in BGR
+        # Find cluster center closest to blue in BGR
         target_color = np.array([255.0, 0.0, 0.0], dtype=np.float32)
         dists = np.sqrt(np.sum((centers - target_color) ** 2, axis=1))
         target_group = int(np.argmin(dists))
 
-        # Step 5: Keep only the target cluster
+        # Keep only the target cluster
         new_centers = np.zeros_like(centers, dtype=np.float32)
         new_centers[target_group] = np.array([255.0, 255.0, 255.0], dtype=np.float32)
 
-        # Step 6: Map each superpixel to its new color
+        # Map each superpixel to its new color
         colors_per_clump = new_centers[bestLabels.flatten()].astype("uint8")
 
-        # Step 7: Recolor the full image and convert to grayscale
+        # Recolor the full image and convert to grayscale
         cell_mask = colors_per_clump[segments]
         cell_mask_gray = cv2.cvtColor(cell_mask, cv2.COLOR_BGR2GRAY)
+
+
 
         # Clean up the mask
         kernel = np.ones((self.morph_kernel_size, self.morph_kernel_size), dtype=np.uint8)
@@ -119,10 +104,17 @@ class CellFinder:
 
         _, binary_mask = cv2.threshold(cell_mask_gray, 127, 255, cv2.THRESH_BINARY)
 
-        # Step 8: Connected components
+
+
+
+        # Connected components
         retval, labels = cv2.connectedComponents(binary_mask)
 
-        # Step 9: Bounding boxes from connected regions
+
+
+
+
+        # Bounding boxes from connected regions
         boxes: List[BoundingBox] = []
         max_component_area = int(h * w * self.max_component_area_ratio)
 
@@ -166,6 +158,11 @@ class CellFinder:
         boxes = self._non_max_suppression(boxes, iou_threshold=0.25)
 
         return boxes
+
+
+
+
+
 
     def _non_max_suppression(self, boxes, iou_threshold=0.25):
         """
